@@ -1,0 +1,29 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Pirate Radio Alexa skill backend
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 7
+
+Resources:
+  PirateRadioLambdaFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: pirate_lambda/
+      Handler: app.handler
+      Runtime: python3.7
+      Events:
+        AlexaSkillEvent:
+          Type: AlexaSkill
+          SkillId: amzn1.ask.skill.0cd623aa-ac57-4739-b9f4-2bfcea63ff6d
+
+Outputs:
+  PirateRadioLambdaFunction:
+    Description: "Hello World Lambda Function ARN"
+    Value: !GetAtt PirateRadioLambdaFunction.Arn
+  PirateRadioLambdaFunctionIamRole:
+    Description: "Implicit IAM Role created for Hello World function"
+    Value: !GetAtt PirateRadioLambdaFunctionRole.Arn

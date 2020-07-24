@@ -1,0 +1,10 @@
+version = 0.1
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "pirate-radio"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-b7v0hbveijz9"
+s3_prefix = "pirate-radio"
+region = "eu-north-1"
+confirm_changeset = false
+capabilities = "CAPABILITY_IAM"
