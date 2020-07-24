@@ -22,8 +22,8 @@ Resources:
 
 Outputs:
   PirateRadioLambdaFunction:
-    Description: "Hello World Lambda Function ARN"
+    Description: "Pirate Radio Lambda Function ARN"
     Value: !GetAtt PirateRadioLambdaFunction.Arn
   PirateRadioLambdaFunctionIamRole:
-    Description: "Implicit IAM Role created for Hello World function"
+    Description: "Implicit IAM Role created for Pirate Radio Lambda function"
     Value: !GetAtt PirateRadioLambdaFunctionRole.Arn

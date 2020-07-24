@@ -8,9 +8,9 @@ from ask_sdk_core.dispatch_components import AbstractRequestHandler
 from ask_sdk_core.dispatch_components import AbstractExceptionHandler
 from ask_sdk_core.dispatch_components import AbstractResponseInterceptor
 from ask_sdk_core.dispatch_components import AbstractRequestInterceptor
-# from ask_sdk_core.handler_input import HandlerInput
-# from ask_sdk_model import Response
-# from ask_sdk_core.exceptions import AskSdkException
+from ask_sdk_core.handler_input import HandlerInput
+from ask_sdk_model import Response
+from ask_sdk_core.exceptions import AskSdkException
 import ask_sdk_core.utils as ask_utils
 from ask_sdk_core.utils import is_intent_name
 from ask_sdk_model.interfaces.audioplayer import (
@@ -18,27 +18,28 @@ from ask_sdk_model.interfaces.audioplayer import (
     StopDirective)
 
 logger = logging.getLogger()
-# retrieve logging level from lambda environmet properties
-# level = os.environ['LOG_LEVEL']
-level = 20
-logger.setLevel(int(level))
+logger.setLevel(20)
+
+# Read available radio stations and construct help message
+with open('radio_stations.json', 'r') as f:
+    RADIO_STATIONS = json.load(f)
+
+stations_string = ''
+radio_keys = RADIO_STATIONS.keys()
+
+for key in radio_keys:
+    if key == list(radio_keys)[-1]:
+        stations_string += 'or ' + key
+    else:
+        stations_string += key + ', '
 
 
 WELCOME_MESSAGE = "Welcome to pirate radio. " \
     "Choose radio station"
 
-HELP_MESSAGE = "You can play p1, p2, p3 or p4. " \
-    "Just say <emphasis level='strong'>play</emphasis> and the station you'd like to listen to."
-
-# RADIO_STATIONS = {
-#     'p1': 'https://http-live.sr.se/p1-mp3-128',
-#     'p2': 'https://http-live.sr.se/p2-mp3-128',
-#     'p3': 'https://http-live.sr.se/p3-mp3-128',
-#     'p4': 'https://http-live.sr.se/p4stockholm-mp3-128'
-# }
-
-with open('radio_stations.json', 'r') as f:
-    RADIO_STATIONS = json.load(f)
+HELP_MESSAGE = "You can play {}. " \
+    "Just say. Play. And the station you'd like to listen to.".format(
+        stations_string)
 
 
 class LaunchRequestHandler(AbstractRequestHandler):
@@ -62,7 +63,6 @@ class LaunchRequestHandler(AbstractRequestHandler):
         )
 
 
-####### Custom Intent Handlers ########
 class RadioPlayIntentHandler(AbstractRequestHandler):
     """Handler for Radio Play Intent."""
 
@@ -74,7 +74,7 @@ class RadioPlayIntentHandler(AbstractRequestHandler):
         # type: (HandlerInput) -> Response
         logger.info("In RadioPlayIntentHandler")
 
-        # station = handler_input.request_envelope.request.intent.slots['station'].value
+        # Always determining the station from one of the station slot synonyms, since Alexa sucks at catvhing Swedish words.
         station = handler_input.request_envelope.request.intent.slots[
             'station'].resolutions.resolutions_per_authority[0].values[0].value.name
 
@@ -99,7 +99,8 @@ class RadioPlayIntentHandler(AbstractRequestHandler):
 
 
 class AudioStopIntentHandler(AbstractRequestHandler):
-    # Handler for Stop
+    """Handler for Stop intent"""
+
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
         return (is_intent_name("AMAZON.CancelIntent")(handler_input) or
@@ -118,7 +119,7 @@ class AudioStopIntentHandler(AbstractRequestHandler):
 
 
 class HelpIntentHandler(AbstractRequestHandler):
-    """Handler for Help Intent."""
+    """Handler for Help Intent"""
 
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
@@ -136,6 +137,7 @@ class HelpIntentHandler(AbstractRequestHandler):
 
 
 class FallbackIntentHandler(AbstractRequestHandler):
+    """Handler for Fallback Intent"""
 
     def can_handle(self, handler_input):
         return ask_utils.is_intent_name("AMAZON.FallbackIntent")(handler_input)
@@ -147,7 +149,7 @@ class FallbackIntentHandler(AbstractRequestHandler):
         speech = (
             "Sorry. I cannot help with that."
         )
-        reprompt = "I didn't catch that. What can I help you with?"
+        reprompt = "What can I help you with?"
 
         return handler_input.response_builder.speak(speech).ask(
             reprompt).response
@@ -179,7 +181,7 @@ class CatchAllExceptionHandler(AbstractExceptionHandler):
         # type: (HandlerInput, Exception) -> Response
         logger.info("In CatchAllExceptionHandler")
         logger.info("Intent: {}".format(
-            handler_input.request_envelope.request.intent.name))
+            handler_input.request_envelope.request))
 
         logger.error(exception, exc_info=True)
         # logger(handler_input)
@@ -201,7 +203,7 @@ class LoggingResponseInterceptor(AbstractResponseInterceptor):
 
     def process(self, handler_input, response):
         # type: (HandlerInput, Response) -> None
-        logger.info(
+        logger.debug(
             "Response logged by LoggingResponseInterceptor: {}".format(response))
 
 
@@ -211,7 +213,7 @@ class LoggingRequestInterceptor(AbstractRequestInterceptor):
     """
 
     def process(self, handler_input):
-        logger.info("Request received by LoggingRequestInterceptor: {}".format(
+        logger.debug("Request received by LoggingRequestInterceptor: {}".format(
             handler_input.request_envelope))
 
 # The SkillBuilder object acts as the entry point for your skill, routing all request and response
