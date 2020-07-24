@@ -5,7 +5,6 @@ This project contains source code and supporting files for a serverless applicat
 - template.yaml - A template that defines the application's AWS resources.
 - pirate_lambda/ - Code for the application's Lambda function.
 - pirate_lambda/radio_stations.json - The supported radio stations and their respective URLs for live streaming
-- pirate_lambda/settings.json - A not tracked file containing the Alexa skill ID.
 
 ## Deploy the Pirate Radio Alexa skill lambda function
 
