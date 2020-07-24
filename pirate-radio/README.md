@@ -47,7 +47,7 @@ To simplify troubleshooting, SAM CLI has a command called `sam logs`. `sam logs`
 `NOTE`: This command works for all AWS Lambda functions; not just the ones you deploy using SAM.
 
 ```bash
-sam-app$ sam logs -n HelloWorldFunction --stack-name sam-app --tail
+pirate-radio$ sam logs -n PirateRadioLambdaFunction --stack-name pirate-radio --tail
 ```
 
 You can find more information and examples about filtering Lambda function logs in the [SAM CLI Documentation](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-logging.html).
@@ -57,5 +57,5 @@ You can find more information and examples about filtering Lambda function logs 
 To delete the sample application that you created, use the AWS CLI. Assuming you used your project name for the stack name, you can run the following:
 
 ```bash
-aws cloudformation delete-stack --stack-name sam-app
+aws cloudformation delete-stack --stack-name pirate-radio
 ```
